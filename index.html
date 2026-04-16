@@ -1,739 +1,489 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#c0697f">
-<title>💄 Lịch Makeup Studio – Đồng bộ thiết bị</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --rose: #e8a4b8; --deep-rose: #c0697f; --blush: #f5dde5;
-    --cream: #fdf6f0; --brown: #5a3a3a; --gold: #c9a96e;
-    --dark: #2d1f1f; --white: #fff;
-    --shadow: 0 4px 24px rgba(90,58,58,0.10);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; }
-
-  /* HEADER */
-  header {
-    background: linear-gradient(135deg, #c0697f 0%, #a3526b 60%, #5a3a3a 100%);
-    color: #fff; padding: 22px 32px 18px;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 14px;
-    box-shadow: 0 2px 20px rgba(90,58,58,0.18);
-  }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon { font-size: 2rem; }
-  .logo-text h1 { font-family: 'Playfair Display', serif; font-size: 1.55rem; letter-spacing: 1px; }
-  .logo-text p { font-size: 0.76rem; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
-  .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-
-  /* SYNC STATUS */
-  .sync-badge {
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,0.13); border-radius: 20px; padding: 6px 14px;
-    font-size: 0.78rem; cursor: pointer; transition: background 0.2s;
-  }
-  .sync-badge:hover { background: rgba(255,255,255,0.22); }
-  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #7fff7f; flex-shrink: 0; }
-  .sync-dot.syncing { background: #ffd700; animation: pulse 1s infinite; }
-  .sync-dot.error   { background: #ff6b6b; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  /* DATE NAV */
-  .date-nav {
-    display: flex; align-items: center; gap: 14px;
-    background: rgba(255,255,255,0.13); border-radius: 28px; padding: 7px 16px;
-  }
-  .date-nav button { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; padding: 2px 6px; border-radius: 50%; transition: background 0.2s; }
-  .date-nav button:hover { background: rgba(255,255,255,0.2); }
-  .date-nav .current-date { font-family: 'Playfair Display', serif; font-size: 1rem; min-width: 175px; text-align: center; }
-
-  .btn-add {
-    background: var(--gold); color: #fff; border: none;
-    padding: 9px 18px; border-radius: 22px; font-family: 'DM Sans'; font-weight: 500;
-    font-size: 0.86rem; cursor: pointer; display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 2px 10px rgba(201,169,110,0.3); transition: all 0.2s;
-  }
-  .btn-add:hover { background: #b8924a; transform: translateY(-1px); }
-
-  /* CONFIG PANEL */
-  .config-panel {
-    background: #fff8f0; border: 1.5px solid #e8d0d8; border-radius: 16px;
-    padding: 20px 24px; margin: 20px 32px 0; display: none;
-  }
-  .config-panel.show { display: block; }
-  .config-panel h3 { font-family: 'Playfair Display', serif; color: var(--deep-rose); margin-bottom: 14px; font-size: 1.1rem; }
-  .config-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-  .config-row .form-group { flex: 1; min-width: 220px; }
-  .config-row label { font-size: 0.76rem; font-weight: 500; color: var(--brown); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 5px; }
-  .config-row input {
-    border: 1.5px solid #e8d0d8; border-radius: 10px; padding: 8px 12px;
-    font-family: 'DM Sans'; font-size: 0.88rem; width: 100%; outline: none;
-    background: var(--cream);
-  }
-  .config-row input:focus { border-color: var(--deep-rose); background: #fff; }
-  .btn-save-cfg { background: var(--deep-rose); color: #fff; border: none; padding: 9px 20px; border-radius: 12px; cursor: pointer; font-family: 'DM Sans'; font-size: 0.86rem; }
-  .cfg-help { font-size: 0.78rem; color: #9a7a7a; margin-top: 10px; line-height: 1.6; }
-  .cfg-help a { color: var(--deep-rose); }
-
-  /* MAIN */
-  main { padding: 22px 32px; max-width: 1400px; margin: 0 auto; }
-
-  /* STATS */
-  .stats-bar { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
-  .stat-card {
-    background: #fff; border-radius: 14px; padding: 13px 20px;
-    box-shadow: var(--shadow); display: flex; align-items: center; gap: 11px;
-    border-left: 4px solid var(--rose); flex: 1; min-width: 150px;
-  }
-  .stat-card .icon { font-size: 1.4rem; }
-  .stat-card .info span { display: block; }
-  .stat-card .info .num { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--deep-rose); }
-  .stat-card .info .lbl { font-size: 0.72rem; color: #999; text-transform: uppercase; letter-spacing: 1px; }
-
-  /* TOOLBAR */
-  .toolbar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
-  .search-input {
-    border: 1.5px solid #e8d0d8; border-radius: 22px; padding: 8px 16px 8px 36px;
-    font-family: 'DM Sans'; font-size: 0.86rem; background: #fff; outline: none;
-    width: 210px; transition: border 0.2s;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23c0697f' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.099zm-5.242 1.15a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: 11px center;
-  }
-  .search-input:focus { border-color: var(--deep-rose); }
-  .filter-select {
-    border: 1.5px solid #e8d0d8; border-radius: 22px; padding: 8px 14px;
-    font-family: 'DM Sans'; font-size: 0.82rem; background: #fff; outline: none; color: var(--dark);
-  }
-  .tb-btn {
-    background: #f0e8ea; color: var(--brown); border: none; border-radius: 16px;
-    padding: 8px 14px; cursor: pointer; font-family: 'DM Sans'; font-size: 0.8rem; white-space: nowrap;
-  }
-  .tb-btn:hover { background: var(--blush); }
-
-  /* SCHEDULE */
-  .schedule-wrap { background: #fff; border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
-  .schedule-header-row {
-    display: grid;
-    grid-template-columns: 80px 1fr 1.2fr 1fr 1fr 130px 110px;
-    background: linear-gradient(90deg, var(--blush) 0%, #fbe8f0 100%);
-    border-bottom: 2px solid var(--rose);
-  }
-  .col-head {
-    padding: 12px 14px; font-size: 0.76rem; font-weight: 500;
-    text-transform: uppercase; letter-spacing: 1.2px; color: var(--deep-rose);
-    border-right: 1px solid rgba(232,164,184,0.3);
-  }
-  .col-head:last-child { border-right: none; }
-
-  .time-slot {
-    display: grid;
-    grid-template-columns: 80px 1fr 1.2fr 1fr 1fr 130px 110px;
-    border-bottom: 1px solid #f5e6eb;
-    transition: background 0.15s; min-height: 60px;
-  }
-  .time-slot:last-child { border-bottom: none; }
-  .time-slot:hover { background: #fdf2f5; }
-  .time-slot.has-booking { background: linear-gradient(90deg, #fff5f8 0%, #fff 100%); }
-  .time-slot.has-booking:hover { background: #feeaf0; }
-
-  .slot-time {
-    padding: 10px 12px; display: flex; align-items: center; justify-content: center;
-    font-size: 0.88rem; font-weight: 500; color: var(--deep-rose);
-    border-right: 2px solid var(--blush);
-    font-family: 'Playfair Display', serif;
-  }
-  .slot-cell {
-    padding: 8px 13px; display: flex; align-items: center;
-    border-right: 1px solid #f5e6eb; font-size: 0.86rem;
-  }
-  .slot-cell:last-child { border-right: none; }
-
-  .booking-name { font-weight: 500; color: var(--dark); }
-  .booking-service { font-size: 0.76rem; color: var(--deep-rose); margin-top: 2px; background: var(--blush); padding: 2px 7px; border-radius: 9px; display: inline-block; }
-  .booking-phone a { color: var(--brown); text-decoration: none; font-size: 0.83rem; }
-  .booking-phone a:hover { color: var(--deep-rose); }
-  .booking-address { font-size: 0.81rem; color: #7a5a5a; }
-  .booking-social a { display: inline-flex; align-items: center; gap: 3px; font-size: 0.78rem; color: #6b8cba; text-decoration: none; background: #eef3fb; padding: 2px 8px; border-radius: 9px; margin-right: 3px; }
-  .booking-social a:hover { background: #d6e4f7; }
-
-  .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.73rem; font-weight: 500; width: fit-content; }
-  .status-confirmed { background: #e3f9e5; color: #2a7a3a; }
-  .status-pending   { background: #fff7e0; color: #a07010; }
-  .status-done      { background: #f0f0f0; color: #888; }
-  .status-cancelled { background: #ffe5e5; color: #c03030; }
-
-  .action-btns { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
-  .btn-edit, .btn-del { border: none; border-radius: 7px; padding: 5px 10px; font-size: 0.76rem; cursor: pointer; font-family: 'DM Sans'; transition: all 0.15s; }
-  .btn-edit { background: var(--blush); color: var(--deep-rose); }
-  .btn-edit:hover { background: var(--rose); color: #fff; }
-  .btn-del  { background: #ffeaea; color: #c03030; }
-  .btn-del:hover  { background: #ffcccc; }
-
-  .slot-empty { color: #d0b0b8; font-size: 0.78rem; font-style: italic; }
-  .btn-book { background: none; border: 1px dashed var(--rose); color: var(--deep-rose); padding: 4px 10px; border-radius: 9px; font-size: 0.76rem; cursor: pointer; font-family: 'DM Sans'; opacity: 0.6; }
-  .btn-book:hover { opacity: 1; background: var(--blush); }
-
-  /* MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(45,31,31,0.45); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: #fff; border-radius: 20px; padding: 32px 32px 26px; width: 540px; max-width: 96vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(90,58,58,0.22); animation: slideUp 0.22s ease; }
-  @keyframes slideUp { from{transform:translateY(28px);opacity:0} to{transform:translateY(0);opacity:1} }
-  .modal h2 { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--deep-rose); margin-bottom: 20px; display: flex; align-items: center; gap: 9px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin-bottom: 13px; }
-  .form-row.full { grid-template-columns: 1fr; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group label { font-size: 0.76rem; font-weight: 500; color: var(--brown); text-transform: uppercase; letter-spacing: 0.8px; }
-  .form-group input, .form-group select, .form-group textarea { border: 1.5px solid #e8d0d8; border-radius: 9px; padding: 8px 12px; font-family: 'DM Sans'; font-size: 0.88rem; color: var(--dark); background: var(--cream); outline: none; transition: border 0.2s; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--deep-rose); background: #fff; }
-  .form-group textarea { resize: vertical; min-height: 55px; }
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-  .btn-cancel { background: #f0e8ea; color: var(--brown); border: none; padding: 9px 20px; border-radius: 12px; cursor: pointer; font-family: 'DM Sans'; }
-  .btn-save { background: var(--deep-rose); color: #fff; border: none; padding: 9px 24px; border-radius: 12px; cursor: pointer; font-family: 'DM Sans'; font-weight: 500; transition: background 0.2s; }
-  .btn-save:hover { background: #a3526b; }
-  .btn-save:disabled { background: #ccc; cursor: not-allowed; }
-
-  /* LOADING */
-  .loading-row { text-align: center; padding: 40px; color: #c0a0a8; }
-  .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #f0d0d8; border-top-color: var(--deep-rose); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 10px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* TOAST */
-  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 0.86rem; box-shadow: 0 6px 24px rgba(0,0,0,0.18); display: none; max-width: 320px; }
-  .toast.show { display: block; animation: fadeIn 0.28s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    header, main { padding-left: 14px; padding-right: 14px; }
-    .config-panel { margin: 12px 14px 0; }
-    .schedule-header-row, .time-slot { grid-template-columns: 68px 1fr 1fr 1fr; }
-    .col-head:nth-child(5), .col-head:nth-child(6),
-    .slot-cell:nth-child(5), .slot-cell:nth-child(6) { display: none; }
-  }
-  @media (max-width: 580px) {
-    .schedule-header-row, .time-slot { grid-template-columns: 62px 1fr 1fr; }
-    .col-head:nth-child(4), .col-head:nth-child(5), .col-head:nth-child(6),
-    .slot-cell:nth-child(4), .slot-cell:nth-child(5), .slot-cell:nth-child(6) { display: none; }
-    .form-row { grid-template-columns: 1fr; }
-    main { padding: 12px 8px; }
-  }
-  @media print {
-    header { background: #c0697f !important; -webkit-print-color-adjust: exact; }
-    .toolbar, .btn-add, .btn-edit, .btn-del, .btn-book, .sync-badge, .config-panel { display: none !important; }
-    .modal-overlay { display: none !important; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>✨ Lịch Makeup Studio - Final Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: '#e8a4b8', deepRose: '#c0697f', blush: '#f5dde5',
+                        cream: '#fdf6f0', brown: '#5a3a3a', gold: '#c9a96e', dark: '#2d1f1f'
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Tùy chỉnh thanh cuộn siêu mượt */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e8a4b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c0697f; }
+        
+        /* Hiệu ứng kéo thả */
+        .drag-over { background-color: #fdf2f5 !important; border: 2px dashed #c0697f !important; }
+        .booking-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .booking-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(192, 105, 127, 0.2); }
+        
+        body { background-color: #fdf6f0; }
+    </style>
 </head>
-<body>
+<body class="text-dark antialiased min-h-screen flex flex-col">
 
-<header>
-  <div class="logo">
-    <span class="logo-icon">💄</span>
-    <div class="logo-text">
-      <h1>Makeup Studio</h1>
-      <p>Lịch làm việc – Đồng bộ thiết bị</p>
-    </div>
-  </div>
-  <div class="header-right">
-    <div class="sync-badge" onclick="toggleConfig()" title="Cấu hình đồng bộ">
-      <span class="sync-dot" id="syncDot"></span>
-      <span id="syncLabel">Chưa kết nối</span>
-    </div>
-    <div class="date-nav">
-      <button onclick="changeDate(-1)">‹</button>
-      <span class="current-date" id="currentDateLabel"></span>
-      <button onclick="changeDate(1)">›</button>
-    </div>
-    <input type="date" id="datePicker" onchange="onDatePick()" style="border:none;background:rgba(255,255,255,0.13);color:#fff;border-radius:9px;padding:6px 10px;font-family:'DM Sans';font-size:0.82rem;cursor:pointer;outline:none;">
-    <button class="btn-add" onclick="openModal()">＋ Thêm lịch</button>
-  </div>
-</header>
-
-<!-- CONFIG PANEL -->
-<div class="config-panel" id="configPanel">
-  <h3>⚙️ Kết nối Google Sheets</h3>
-  <div class="config-row">
-    <div class="form-group">
-      <label>Google Apps Script URL *</label>
-      <input type="url" id="cfgUrl" placeholder="https://script.google.com/macros/s/AKfycbxZ6wjR-LDzsEDk4Yrlo2vmZwaXO74IeR-Xtejg3tVxrO1d-SJTIYEJVXu0Y4T-_5DK/exec">
-    </div>
-    <button class="btn-save-cfg" onclick="saveConfig()">✅ Lưu & Kết nối</button>
-  </div>
-  <div class="cfg-help">
-    📌 Xem hướng dẫn tạo Apps Script bên dưới (hoặc trong file README). Sau khi dán URL vào đây, nhấn "Lưu & Kết nối" — dữ liệu sẽ đồng bộ tự động mọi thiết bị qua Google Sheets.
-    <br>⚠️ Nếu chưa cấu hình, app vẫn chạy và lưu <b>offline</b> trong trình duyệt.
-  </div>
-</div>
-
-<main>
-  <div class="stats-bar">
-    <div class="stat-card">
-      <span class="icon">📅</span>
-      <div class="info"><span class="num" id="statTotal">0</span><span class="lbl">Lịch hôm nay</span></div>
-    </div>
-    <div class="stat-card" style="border-color:#c9a96e">
-      <span class="icon">✅</span>
-      <div class="info"><span class="num" id="statDone">0</span><span class="lbl">Hoàn thành</span></div>
-    </div>
-    <div class="stat-card" style="border-color:#6bb5a3">
-      <span class="icon">⏳</span>
-      <div class="info"><span class="num" id="statPending">0</span><span class="lbl">Chờ xác nhận</span></div>
-    </div>
-    <div class="stat-card" style="border-color:#a3526b">
-      <span class="icon">💰</span>
-      <div class="info"><span class="num" id="statRevenue">0đ</span><span class="lbl">Doanh thu</span></div>
-    </div>
-  </div>
-
-  <div class="toolbar">
-    <input class="search-input" type="text" placeholder="Tìm tên, SĐT..." id="searchInput" oninput="renderSchedule()">
-    <select class="filter-select" id="filterStatus" onchange="renderSchedule()">
-      <option value="">Tất cả trạng thái</option>
-      <option value="confirmed">✅ Đã xác nhận</option>
-      <option value="pending">⏳ Chờ xác nhận</option>
-      <option value="done">✔️ Hoàn thành</option>
-      <option value="cancelled">❌ Đã huỷ</option>
-    </select>
-    <select class="filter-select" id="filterService" onchange="renderSchedule()">
-      <option value="">Tất cả dịch vụ</option>
-      <option>Makeup cô dâu</option><option>Makeup dự tiệc</option>
-      <option>Makeup sự kiện</option><option>Makeup hàng ngày</option>
-      <option>Makeup chụp ảnh</option><option>Makeup biểu diễn</option><option>Tư vấn</option>
-    </select>
-    <button class="tb-btn" onclick="loadFromSheets()">🔄 Làm mới</button>
-    <button class="tb-btn" onclick="window.print()">🖨️ In lịch</button>
-    <button class="tb-btn" onclick="exportCSV()">📥 Xuất CSV</button>
-  </div>
-
-  <div class="schedule-wrap">
-    <div class="schedule-header-row">
-      <div class="col-head">Giờ</div>
-      <div class="col-head">Khách hàng & Dịch vụ</div>
-      <div class="col-head">📍 Địa điểm</div>
-      <div class="col-head">📞 Số điện thoại</div>
-      <div class="col-head">🔗 Facebook / Zalo</div>
-      <div class="col-head">Trạng thái</div>
-      <div class="col-head">Thao tác</div>
-    </div>
-    <div id="scheduleBody"><div class="loading-row"><div class="spinner"></div><div>Đang tải...</div></div></div>
-  </div>
-</main>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
-  <div class="modal">
-    <h2>💄 <span id="modalTitle">Thêm lịch mới</span></h2>
-    <input type="hidden" id="editId">
-    <div class="form-row">
-      <div class="form-group"><label>Giờ bắt đầu *</label><select id="fTimeStart"></select></div>
-      <div class="form-group"><label>Giờ kết thúc</label><select id="fTimeEnd"></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Tên khách hàng *</label><input type="text" id="fName" placeholder="Nguyễn Thị A"></div>
-      <div class="form-group"><label>Số điện thoại</label><input type="tel" id="fPhone" placeholder="0912 345 678"></div>
-    </div>
-    <div class="form-row full">
-      <div class="form-group"><label>Dịch vụ</label>
-        <select id="fService">
-          <option>Makeup cô dâu</option><option>Makeup dự tiệc</option><option>Makeup sự kiện</option>
-          <option>Makeup hàng ngày</option><option>Makeup chụp ảnh</option><option>Makeup biểu diễn</option><option>Tư vấn</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row full">
-      <div class="form-group"><label>Địa điểm</label><input type="text" id="fAddress" placeholder="Studio / Nhà khách / Địa chỉ cụ thể"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Facebook</label><input type="text" id="fFacebook" placeholder="facebook.com/..."></div>
-      <div class="form-group"><label>Zalo</label><input type="text" id="fZalo" placeholder="Số Zalo hoặc link"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Trạng thái</label>
-        <select id="fStatus">
-          <option value="pending">⏳ Chờ xác nhận</option>
-          <option value="confirmed">✅ Đã xác nhận</option>
-          <option value="done">✔️ Hoàn thành</option>
-          <option value="cancelled">❌ Đã huỷ</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Phí dịch vụ (đ)</label><input type="number" id="fPrice" placeholder="500000" min="0"></div>
-    </div>
-    <div class="form-row full">
-      <div class="form-group"><label>Ghi chú</label><textarea id="fNote" placeholder="Yêu cầu đặc biệt, phong cách..."></textarea></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Huỷ</button>
-      <button class="btn-save" id="btnSave" onclick="saveBooking()">💾 Lưu lịch</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// ════════════════════════════════════════════════════════
-//  CONFIG
-// ════════════════════════════════════════════════════════
-let SCRIPT_URL = localStorage.getItem('makeup_script_url') || '';
-
-function saveConfig() {
-  const url = document.getElementById('cfgUrl').value.trim();
-  if (!url.startsWith('https://script.google.com/')) {
-    showToast('⚠️ URL không hợp lệ. Phải bắt đầu bằng https://script.google.com/');
-    return;
-  }
-  SCRIPT_URL = url;
-  localStorage.setItem('makeup_script_url', url);
-  toggleConfig();
-  showToast('✅ Đã lưu cấu hình! Đang kết nối...');
-  loadFromSheets();
-}
-
-function toggleConfig() {
-  const p = document.getElementById('configPanel');
-  p.classList.toggle('show');
-  if (p.classList.contains('show')) {
-    document.getElementById('cfgUrl').value = SCRIPT_URL;
-  }
-}
-// ==================== ĐẨY DỮ LIỆU TỪ APP LÊN SHEETS ====================
-async function pushToSheet() {
-  if (isPushing) return;
-  if (bookings.length === 0) {
-    showToast('⚠️ Không có dữ liệu để đẩy lên Sheets');
-    return;
-  }
-  
-  isPushing = true;
-  document.getElementById('syncStatus').innerHTML = '⏳ Đang đẩy lên Sheets...';
-  document.getElementById('syncStatus').className = 'sync-status warning';
-
-  try {
-    // Sửa lỗi CORS bằng cách dùng text/plain thay vì application/json
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8",
-      },
-      body: JSON.stringify({ action: 'update', data: bookings })
-    });
-
-    localStorage.setItem('makeup_backup', JSON.stringify(bookings));
-    document.getElementById('syncStatus').innerHTML = '✅ Đã đẩy lên Sheets thành công!';
-    document.getElementById('syncStatus').className = 'sync-status';
-    showToast(`📤 Đã đồng bộ ${bookings.length} lịch hẹn!`);
-    
-    setTimeout(() => {
-      document.getElementById('syncStatus').innerHTML = '🟢 Sẵn sàng';
-    }, 2000);
-
-  } catch (error) {
-    console.error('Lỗi push:', error);
-    document.getElementById('syncStatus').innerHTML = '❌ Lỗi kết nối';
-    document.getElementById('syncStatus').className = 'sync-status error';
-    showToast('❌ Mạng lỗi, không thể đẩy lên Sheets');
-  }
-  isPushing = false;
-}
-// ════════════════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════════════════
-let currentDate = new Date();
-let bookings = JSON.parse(localStorage.getItem('makeup_offline') || '[]');
-let isOnline = false;
-
-const HOURS = [];
-for (let h = 5; h <= 22; h++) {
-  HOURS.push(`${String(h).padStart(2,'0')}:00`);
-  HOURS.push(`${String(h).padStart(2,'0')}:30`);
-}
-
-const STATUS_LABELS = {
-  confirmed: '<span class="status-badge status-confirmed">✅ Xác nhận</span>',
-  pending:   '<span class="status-badge status-pending">⏳ Chờ duyệt</span>',
-  done:      '<span class="status-badge status-done">✔️ Xong</span>',
-  cancelled: '<span class="status-badge status-cancelled">❌ Huỷ</span>',
-};
-
-function dateKey(d) { return d.toISOString().slice(0,10); }
-function formatDateVN(d) {
-  const days = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
-  return `${days[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-}
-
-// ════════════════════════════════════════════════════════
-//  SYNC STATUS UI
-// ════════════════════════════════════════════════════════
-function setSyncStatus(state, msg) {
-  const dot = document.getElementById('syncDot');
-  const lbl = document.getElementById('syncLabel');
-  dot.className = 'sync-dot' + (state==='syncing'?' syncing': state==='error'?' error':'');
-  lbl.textContent = msg;
-  isOnline = (state === 'ok');
-}
-
-// ════════════════════════════════════════════════════════
-//  GOOGLE SHEETS API (via Apps Script)
-// ════════════════════════════════════════════════════════
-async function apiFetch(params) {
-  if (!SCRIPT_URL) return null;
-  const url = SCRIPT_URL + '?' + new URLSearchParams(params);
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
-}
-
-async function apiPost(body) {
-  if (!SCRIPT_URL) return null;
-  const res = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
-}
-
-async function loadFromSheets() {
-  if (!SCRIPT_URL) {
-    setSyncStatus('error', 'Chưa cấu hình');
-    renderSchedule(); return;
-  }
-  setSyncStatus('syncing', 'Đang đồng bộ...');
-  try {
-    const data = await apiFetch({ action: 'getAll' });
-    if (data && data.bookings) {
-      bookings = data.bookings;
-      localStorage.setItem('makeup_offline', JSON.stringify(bookings));
-      setSyncStatus('ok', 'Đã đồng bộ ✓');
-    } else {
-      setSyncStatus('error', 'Lỗi dữ liệu');
-    }
-  } catch(e) {
-    setSyncStatus('error', 'Lỗi kết nối');
-    showToast('⚠️ Không kết nối được Sheets. Dùng dữ liệu offline.');
-  }
-  renderSchedule();
-}
-
-// ════════════════════════════════════════════════════════
-//  RENDER
-// ════════════════════════════════════════════════════════
-function renderSchedule() {
-  const key = dateKey(currentDate);
-  const search  = document.getElementById('searchInput').value.toLowerCase();
-  const fStatus  = document.getElementById('filterStatus').value;
-  const fService = document.getElementById('filterService').value;
-
-  const todayBookings = bookings.filter(b => b.date === key);
-  document.getElementById('statTotal').textContent   = todayBookings.length;
-  document.getElementById('statDone').textContent    = todayBookings.filter(b=>b.status==='done').length;
-  document.getElementById('statPending').textContent = todayBookings.filter(b=>b.status==='pending').length;
-  const rev = todayBookings.filter(b=>['done','confirmed'].includes(b.status)).reduce((s,b)=>s+(+b.price||0),0);
-  document.getElementById('statRevenue').textContent = rev.toLocaleString('vi-VN')+'đ';
-
-  let html = '';
-  let anyRow = false;
-
-  for (const hour of HOURS) {
-    const slotBkgs = todayBookings.filter(b => b.timeStart === hour);
-    const hasFiltered = slotBkgs.some(b => {
-      if (search && !b.name.toLowerCase().includes(search) && !(b.phone||'').includes(search)) return false;
-      if (fStatus  && b.status  !== fStatus)  return false;
-      if (fService && b.service !== fService) return false;
-      return true;
-    });
-
-    if (slotBkgs.length === 0) {
-      if (search || fStatus || fService) continue;
-      anyRow = true;
-      html += `
-      <div class="time-slot">
-        <div class="slot-time">${hour}</div>
-        <div class="slot-cell" style="grid-column:2/-1">
-          <span class="slot-empty">Chưa có lịch —</span>
-          <button class="btn-book" style="margin-left:10px" onclick="openModal('${hour}')">＋ Đặt</button>
+    <header class="bg-gradient-to-r from-deepRose via-[#a3526b] to-brown text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl filter drop-shadow-md">💄</span>
+                <div>
+                    <h1 class="font-serif text-2xl font-bold tracking-wide">Makeup Studio</h1>
+                    <p class="text-xs uppercase tracking-widest opacity-80 mt-1">Quản lý Lịch & Khách Hàng</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 flex-wrap justify-center">
+                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/20">
+                    <button onclick="changeDate(-1)" class="hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-colors">‹</button>
+                    <div class="relative">
+                        <span id="currentDateLabel" class="font-serif text-lg font-medium min-w-[150px] text-center inline-block cursor-pointer"></span>
+                        <input type="date" id="datePicker" onchange="onDatePick()" class="absolute inset-0 opacity-0 cursor-pointer w-full">
+                    </div>
+                    <button onclick="changeDate(1)" class="hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-colors">›</button>
+                </div>
+                <button onclick="openModal()" class="bg-gold hover:bg-[#b8924a] text-white px-5 py-2.5 rounded-full font-medium shadow-[0_4px_14px_rgba(201,169,110,0.4)] transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Thêm Lịch
+                </button>
+            </div>
         </div>
-      </div>`;
-      continue;
-    }
+    </header>
 
-    for (const b of slotBkgs) {
-      if (search && !b.name.toLowerCase().includes(search) && !(b.phone||'').includes(search)) continue;
-      if (fStatus  && b.status  !== fStatus)  continue;
-      if (fService && b.service !== fService) continue;
-      anyRow = true;
-
-      const fbLink   = b.facebook ? `<a href="${b.facebook.startsWith('http')?b.facebook:'https://'+b.facebook}" target="_blank">📘 FB</a>` : '';
-      const zaloLink = b.zalo    ? `<a href="https://zalo.me/${b.zalo.replace(/\D/g,'')}" target="_blank">💬 Zalo</a>` : '';
-
-      html += `
-      <div class="time-slot has-booking">
-        <div class="slot-time">${b.timeStart}${b.timeEnd?`<br><small style="font-size:0.66rem;opacity:0.55">→${b.timeEnd}</small>`:''}</div>
-        <div class="slot-cell">
-          <div>
-            <div class="booking-name">${esc(b.name)}</div>
-            <span class="booking-service">${esc(b.service||'')}</span>
-            ${b.note?`<div style="font-size:0.73rem;color:#9a7a7a;margin-top:2px">📝 ${esc(b.note)}</div>`:''}
-            ${b.price?`<div style="font-size:0.75rem;color:var(--gold);margin-top:2px">💰 ${(+b.price).toLocaleString('vi-VN')}đ</div>`:''}
-          </div>
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-rose flex items-center gap-4">
+                <div class="text-3xl bg-blush p-3 rounded-xl">📅</div>
+                <div><p class="text-3xl font-serif text-deepRose font-bold" id="statTotal">0</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Hôm nay</p></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-gold flex items-center gap-4">
+                <div class="text-3xl bg-yellow-50 p-3 rounded-xl">✅</div>
+                <div><p class="text-3xl font-serif text-deepRose font-bold" id="statDone">0</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Đã xong</p></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-[#6bb5a3] flex items-center gap-4">
+                <div class="text-3xl bg-teal-50 p-3 rounded-xl">⏳</div>
+                <div><p class="text-3xl font-serif text-deepRose font-bold" id="statPending">0</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Chờ duyệt</p></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-brown flex items-center gap-4">
+                <div class="text-3xl bg-orange-50 p-3 rounded-xl">💰</div>
+                <div><p class="text-xl font-serif text-deepRose font-bold" id="statRevenue">0đ</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Doanh thu</p></div>
+            </div>
         </div>
-        <div class="slot-cell booking-address">${b.address?'📍 '+esc(b.address):'<span class="slot-empty">—</span>'}</div>
-        <div class="slot-cell booking-phone">${b.phone?`<a href="tel:${b.phone}">📞 ${esc(b.phone)}</a>`:'<span class="slot-empty">—</span>'}</div>
-        <div class="slot-cell booking-social">${fbLink}${zaloLink}${(!fbLink&&!zaloLink)?'<span class="slot-empty">—</span>':''}</div>
-        <div class="slot-cell">${STATUS_LABELS[b.status]||''}</div>
-        <div class="slot-cell action-btns">
-          <button class="btn-edit" onclick="editBooking('${b.id}')">✏️</button>
-          <button class="btn-del"  onclick="deleteBooking('${b.id}')">🗑️</button>
+
+        <div class="flex flex-wrap gap-3 items-center mb-6 bg-white p-3 rounded-2xl shadow-sm border border-blush">
+            <div class="relative flex-1 min-w-[200px]">
+                <span class="absolute left-3 top-2.5 text-rose">🔍</span>
+                <input type="text" id="searchInput" oninput="renderSchedule()" placeholder="Tìm khách hàng, SĐT..." class="w-full bg-cream border border-blush rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-deepRose focus:ring-1 focus:ring-deepRose transition-all">
+            </div>
+            <select id="filterStatus" onchange="renderSchedule()" class="bg-cream border border-blush rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-deepRose">
+                <option value="">Tất cả trạng thái</option>
+                <option value="confirmed">✅ Đã chốt</option>
+                <option value="pending">⏳ Chờ xác nhận</option>
+                <option value="done">✔️ Hoàn thành</option>
+            </select>
+            <div class="h-8 w-px bg-blush mx-2 hidden md:block"></div>
+            <button onclick="pullFromSheet()" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-xl text-sm font-medium transition-colors">📥 Tải về</button>
+            <button onclick="pushToSheet()" class="bg-green-50 text-green-600 hover:bg-green-100 px-4 py-2 rounded-xl text-sm font-medium transition-colors">📤 Đồng bộ</button>
+            <span id="syncStatus" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600">🟢 Khởi động...</span>
         </div>
-      </div>`;
-    }
-  }
 
-  if (!anyRow) html = `<div style="text-align:center;padding:40px;color:#c0a0a8;font-style:italic">Không có lịch nào${search?' khớp tìm kiếm':' cho ngày này'}</div>`;
-  document.getElementById('scheduleBody').innerHTML = html;
-}
+        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-blush/50 overflow-hidden">
+            <div class="bg-gradient-to-r from-blush to-[#fbe8f0] px-6 py-3 border-b-2 border-rose flex justify-between items-center">
+                <h2 class="font-serif text-deepRose font-bold text-lg">Lịch Trình Chi Tiết</h2>
+                <span class="text-xs text-brown font-medium bg-white/50 px-3 py-1 rounded-full hidden md:inline-block">Kéo thả thẻ để đổi giờ</span>
+            </div>
+            
+            <div id="scheduleBody" class="divide-y divide-blush/40 flex flex-col pb-10">
+                </div>
+        </div>
+    </main>
 
-// ════════════════════════════════════════════════════════
-//  DATE NAV
-// ════════════════════════════════════════════════════════
-function updateDateDisplay() {
-  document.getElementById('currentDateLabel').textContent = formatDateVN(currentDate);
-  document.getElementById('datePicker').value = dateKey(currentDate);
-}
-function changeDate(d) { currentDate.setDate(currentDate.getDate()+d); updateDateDisplay(); renderSchedule(); }
-function onDatePick()  { const v=document.getElementById('datePicker').value; if(v){currentDate=new Date(v+'T00:00:00');updateDateDisplay();renderSchedule();} }
+    <div id="modalOverlay" class="fixed inset-0 bg-dark/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="closeModalOutside(event)">
+        <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-[scale-in_0.2s_ease-out]">
+            <div class="bg-gradient-to-r from-deepRose to-brown px-6 py-4 flex justify-between items-center">
+                <h2 id="modalTitle" class="font-serif text-xl text-white font-bold tracking-wide">✨ Thêm Lịch Mới</h2>
+                <button onclick="closeModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto max-h-[80vh]">
+                <input type="hidden" id="editId">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Thời gian</label>
+                        <div class="flex items-center gap-2">
+                            <select id="fTimeStart" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none"></select>
+                            <span class="text-gray-400">→</span>
+                            <select id="fTimeEnd" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Trạng thái</label>
+                        <select id="fStatus" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none font-medium">
+                            <option value="pending">⏳ Chờ xác nhận</option>
+                            <option value="confirmed">✅ Đã chốt lịch</option>
+                            <option value="done">✔️ Hoàn thành</option>
+                            <option value="cancelled">❌ Đã huỷ</option>
+                        </select>
+                    </div>
+                </div>
 
-// ════════════════════════════════════════════════════════
-//  MODAL
-// ════════════════════════════════════════════════════════
-function populateTimeSelects(start='', end='') {
-  const s=document.getElementById('fTimeStart'), e=document.getElementById('fTimeEnd');
-  s.innerHTML=HOURS.map(h=>`<option${h===start?' selected':''}>${h}</option>`).join('');
-  e.innerHTML=`<option value="">— tùy chọn</option>`+HOURS.map(h=>`<option${h===end?' selected':''}>${h}</option>`).join('');
-}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Khách hàng *</label>
+                        <input type="text" id="fName" placeholder="Tên khách hàng..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Số điện thoại</label>
+                        <input type="tel" id="fPhone" placeholder="09xx..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
+                    </div>
+                </div>
 
-function openModal(hour='') {
-  document.getElementById('editId').value='';
-  document.getElementById('modalTitle').textContent='Thêm lịch mới';
-  populateTimeSelects(hour||'08:00','');
-  ['fName','fPhone','fAddress','fFacebook','fZalo','fNote','fPrice'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fService').value='Makeup cô dâu';
-  document.getElementById('fStatus').value='pending';
-  document.getElementById('modalOverlay').classList.add('open');
-}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Dịch vụ</label>
+                        <select id="fService" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
+                            <option>Makeup cô dâu</option><option>Makeup dự tiệc</option><option>Makeup sự kiện</option><option>Makeup kỷ yếu</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Chi phí (VNĐ)</label>
+                        <input type="number" id="fPrice" placeholder="Ví dụ: 500000" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none text-gold font-bold">
+                    </div>
+                </div>
 
-function editBooking(id) {
-  const b = bookings.find(x=>x.id===id); if(!b) return;
-  document.getElementById('editId').value=id;
-  document.getElementById('modalTitle').textContent='Sửa lịch';
-  populateTimeSelects(b.timeStart,b.timeEnd||'');
-  document.getElementById('fName').value=b.name||'';
-  document.getElementById('fPhone').value=b.phone||'';
-  document.getElementById('fAddress').value=b.address||'';
-  document.getElementById('fFacebook').value=b.facebook||'';
-  document.getElementById('fZalo').value=b.zalo||'';
-  document.getElementById('fNote').value=b.note||'';
-  document.getElementById('fPrice').value=b.price||'';
-  document.getElementById('fService').value=b.service||'';
-  document.getElementById('fStatus').value=b.status||'pending';
-  document.getElementById('modalOverlay').classList.add('open');
-}
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Địa điểm Makeup</label>
+                    <input type="text" id="fAddress" placeholder="Tại Studio hoặc địa chỉ nhà khách..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
+                </div>
 
-function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
-function closeModalOutside(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Ghi chú (Note)</label>
+                    <textarea id="fNote" rows="2" placeholder="Tone makeup, dị ứng mỹ phẩm..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none"></textarea>
+                </div>
 
-async function saveBooking() {
-  const name = document.getElementById('fName').value.trim();
-  if (!name) { showToast('⚠️ Vui lòng nhập tên khách hàng'); return; }
-  const editId = document.getElementById('editId').value;
-  const data = {
-    id: editId || (Date.now().toString(36)+Math.random().toString(36).slice(2)),
-    date: dateKey(currentDate),
-    timeStart: document.getElementById('fTimeStart').value,
-    timeEnd:   document.getElementById('fTimeEnd').value,
-    name, service: document.getElementById('fService').value,
-    phone:    document.getElementById('fPhone').value.trim(),
-    address:  document.getElementById('fAddress').value.trim(),
-    facebook: document.getElementById('fFacebook').value.trim(),
-    zalo:     document.getElementById('fZalo').value.trim(),
-    status:   document.getElementById('fStatus').value,
-    price:    document.getElementById('fPrice').value,
-    note:     document.getElementById('fNote').value.trim(),
-  };
+                <div class="flex justify-end gap-3 pt-4 border-t border-blush">
+                    <button onclick="closeModal()" class="px-6 py-2.5 rounded-xl font-medium text-brown bg-gray-100 hover:bg-gray-200 transition-colors">Huỷ</button>
+                    <button onclick="saveBooking()" class="px-6 py-2.5 rounded-xl font-medium text-white bg-deepRose hover:bg-[#a3526b] shadow-md transition-all">Lưu Lịch Hẹn</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  // Optimistic update
-  if (editId) { bookings = bookings.map(b=>b.id===editId?data:b); }
-  else        { bookings.push(data); }
-  localStorage.setItem('makeup_offline', JSON.stringify(bookings));
-  renderSchedule();
-  closeModal();
+    <div id="toast" class="fixed bottom-6 right-6 bg-dark text-white px-6 py-3 rounded-xl shadow-2xl font-medium text-sm transform translate-y-20 opacity-0 transition-all duration-300 z-[60]">
+        Thông báo
+    </div>
 
-  // Sync to Sheets
-  if (SCRIPT_URL) {
-    setSyncStatus('syncing','Đang lưu...');
-    try {
-      const res = await apiPost({ action: editId ? 'update' : 'add', booking: data });
-      if (res && res.success) {
-        setSyncStatus('ok','Đã đồng bộ ✓');
-        showToast(editId ? '✅ Đã cập nhật & đồng bộ!' : '✅ Đã thêm & đồng bộ!');
-      } else { throw new Error(); }
-    } catch {
-      setSyncStatus('error','Lỗi đồng bộ');
-      showToast('💾 Đã lưu offline. Sẽ đồng bộ lại sau.');
-    }
-  } else {
-    showToast(editId ? '✅ Đã cập nhật (offline)' : '✅ Đã thêm (offline)');
-  }
-}
+    <script>
+        // ================= THAY LINK GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY =================
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ6wjR-LDzsEDk4Yrlo2vmZwaXO74IeR-Xtejg3tVxrO1d-SJTIYEJVXu0Y4T-_5DK/exec";
+        // ==============================================================================
 
-async function deleteBooking(id) {
-  if (!confirm('Xoá lịch này?')) return;
-  bookings = bookings.filter(b=>b.id!==id);
-  localStorage.setItem('makeup_offline', JSON.stringify(bookings));
-  renderSchedule();
+        // Khởi tạo Dữ liệu
+        let currentDate = new Date();
+        let bookings = [];
+        let isSyncing = false;
 
-  if (SCRIPT_URL) {
-    setSyncStatus('syncing','Đang xoá...');
-    try {
-      const res = await apiPost({ action: 'delete', id });
-      if (res && res.success) { setSyncStatus('ok','Đã đồng bộ ✓'); showToast('🗑️ Đã xoá & đồng bộ'); }
-      else throw new Error();
-    } catch { setSyncStatus('error','Lỗi đồng bộ'); showToast('🗑️ Đã xoá (offline)'); }
-  } else {
-    showToast('🗑️ Đã xoá (offline)');
-  }
-}
+        const STATUS_COLORS = {
+            'pending': 'bg-yellow-50 text-yellow-700 border-yellow-200',
+            'confirmed': 'bg-blue-50 text-blue-700 border-blue-200',
+            'done': 'bg-green-50 text-green-700 border-green-200',
+            'cancelled': 'bg-red-50 text-red-700 border-red-200'
+        };
+        const STATUS_TEXT = { 'pending': '⏳ Chờ duyệt', 'confirmed': '✅ Đã chốt', 'done': '✔️ Xong', 'cancelled': '❌ Hủy' };
 
-// ════════════════════════════════════════════════════════
-//  UTILS
-// ════════════════════════════════════════════════════════
-function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+        // Tạo mảng khung giờ (06:00 -> 21:00)
+        const HOURS = Array.from({length: 16}, (_, i) => `${String(i+6).padStart(2, '0')}:00`);
 
-function exportCSV() {
-  const key=dateKey(currentDate), rows=bookings.filter(b=>b.date===key);
-  if(!rows.length){ showToast('Không có dữ liệu để xuất'); return; }
-  const headers=['Giờ bắt đầu','Giờ kết thúc','Tên khách','Dịch vụ','Địa điểm','SĐT','Facebook','Zalo','Trạng thái','Phí','Ghi chú'];
-  const csv=[headers.join(','),...rows.map(b=>[b.timeStart,b.timeEnd,b.name,b.service,b.address,b.phone,b.facebook,b.zalo,b.status,b.price,b.note].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','))];
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv.join('\n')],{type:'text/csv;charset=utf-8'}));
-  a.download=`lich-makeup-${key}.csv`; a.click(); showToast('📥 Đã xuất CSV!');
-}
+        // ================= LOGIC KÉO THẢ (DRAG & DROP) =================
+        function allowDrop(ev) {
+            ev.preventDefault();
+            ev.currentTarget.classList.add('drag-over');
+        }
+        function dragLeave(ev) { ev.currentTarget.classList.remove('drag-over'); }
+        
+        function dragStart(ev, id) {
+            ev.dataTransfer.setData("text/plain", id);
+            setTimeout(() => ev.target.style.opacity = '0.5', 0);
+        }
+        function dragEnd(ev) { ev.target.style.opacity = '1'; }
+        
+        function drop(ev, newTime) {
+            ev.preventDefault();
+            ev.currentTarget.classList.remove('drag-over');
+            const id = ev.dataTransfer.getData("text/plain");
+            
+            const bookingIndex = bookings.findIndex(b => b.id === id);
+            if (bookingIndex > -1 && bookings[bookingIndex].timeStart !== newTime) {
+                bookings[bookingIndex].timeStart = newTime;
+                localStorage.setItem('makeup_backup', JSON.stringify(bookings));
+                renderSchedule();
+                showToast(`🕒 Đã dời lịch của ${bookings[bookingIndex].name} sang ${newTime}. Nhớ bấm Đồng bộ!`);
+            }
+        }
 
-// ════════════════════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════════════════════
-updateDateDisplay();
-if (SCRIPT_URL) { loadFromSheets(); } 
-else { setSyncStatus('error','Chưa cấu hình'); renderSchedule(); }
+        // ================= HIỂN THỊ DỮ LIỆU =================
+        function dateKey(d) { return d.toISOString().slice(0, 10); }
+        function formatDateVN(d) {
+            const days = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+            return `${days[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+        }
 
-// Auto-refresh mỗi 60 giây nếu đã kết nối
-setInterval(() => { if (SCRIPT_URL && isOnline) loadFromSheets(); }, 60000);
-</script>
+        function renderSchedule() {
+            const key = dateKey(currentDate);
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            const todayBookings = bookings.filter(b => b.date === key);
+
+            // Cập nhật thống kê
+            document.getElementById('statTotal').textContent = todayBookings.length;
+            document.getElementById('statDone').textContent = todayBookings.filter(b=>b.status==='done').length;
+            document.getElementById('statPending').textContent = todayBookings.filter(b=>b.status==='pending').length;
+            const rev = todayBookings.filter(b=>b.status==='done'||b.status==='confirmed').reduce((s,b)=>s+(+b.price||0),0);
+            document.getElementById('statRevenue').textContent = rev.toLocaleString('vi-VN') + 'đ';
+
+            const container = document.getElementById('scheduleBody');
+            container.innerHTML = '';
+
+            HOURS.forEach(hour => {
+                const slotBookings = todayBookings.filter(b => b.timeStart === hour && (!filterStatus || b.status === filterStatus) && (!search || b.name.toLowerCase().includes(search) || (b.phone||'').includes(search)));
+                
+                // Ẩn khung giờ trống nếu đang tìm kiếm hoặc lọc
+                if (slotBookings.length === 0 && (search || filterStatus)) return;
+
+                const row = document.createElement('div');
+                row.className = "flex flex-col md:flex-row min-h-[100px] transition-colors hover:bg-white/50 border-b border-blush/30";
+                
+                // Dropzone events
+                row.ondragover = allowDrop;
+                row.ondragleave = dragLeave;
+                row.ondrop = (e) => drop(e, hour);
+
+                let cardsHtml = '';
+                slotBookings.forEach(b => {
+                    cardsHtml += `
+                        <div draggable="true" ondragstart="dragStart(event, '${b.id}')" ondragend="dragEnd(event)" 
+                             class="booking-card w-full md:w-80 bg-white border border-blush rounded-xl p-4 shadow-sm cursor-grab active:cursor-grabbing flex flex-col justify-between">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-bold text-brown text-base">${b.name}</h4>
+                                    <p class="text-xs text-deepRose font-medium">${b.service}</p>
+                                </div>
+                                <span class="text-[10px] font-bold px-2 py-1 rounded-md border ${STATUS_COLORS[b.status]}">${STATUS_TEXT[b.status]}</span>
+                            </div>
+                            
+                            <div class="space-y-1.5 text-sm text-gray-600 mb-3">
+                                ${b.phone ? `<p class="flex items-center gap-2">📞 <a href="tel:${b.phone}" class="hover:text-deepRose">${b.phone}</a></p>` : ''}
+                                ${b.address ? `<p class="flex items-start gap-2 truncate">📍 <span class="truncate">${b.address}</span></p>` : ''}
+                                ${b.price ? `<p class="flex items-center gap-2 text-gold font-medium">💰 ${(+b.price).toLocaleString('vi-VN')}đ</p>` : ''}
+                            </div>
+                            
+                            <div class="flex justify-between items-center pt-3 border-t border-blush/50">
+                                <span class="text-xs text-gray-400 font-medium">${b.timeStart} ${b.timeEnd ? ' - '+b.timeEnd : ''}</span>
+                                <div class="flex gap-2">
+                                    <button onclick="editBooking('${b.id}')" class="text-gray-400 hover:text-deepRose transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                                    <button onclick="deleteBooking('${b.id}')" class="text-gray-400 hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (slotBookings.length === 0) {
+                    cardsHtml = `<div class="flex-1 flex items-center justify-center text-sm text-gray-400 italic">Trống - Kéo lịch vào đây hoặc <button onclick="openModal('${hour}')" class="ml-1 text-deepRose hover:underline font-medium">Thêm</button></div>`;
+                }
+
+                row.innerHTML = `
+                    <div class="w-full md:w-28 flex-shrink-0 bg-cream/30 border-b md:border-b-0 md:border-r border-blush/50 p-4 flex flex-col justify-center items-center">
+                        <span class="font-serif text-xl font-bold text-deepRose">${hour}</span>
+                    </div>
+                    <div class="flex-1 p-4 flex flex-wrap gap-4 items-start content-start min-h-[120px]">
+                        ${cardsHtml}
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // ================= CÁC HÀM QUẢN LÝ DỮ LIỆU & MODAL =================
+        function loadLocalBackup() {
+            const backup = localStorage.getItem('makeup_backup');
+            if (backup) {
+                bookings = JSON.parse(backup);
+            }
+            renderSchedule();
+        }
+
+        function saveBooking() {
+            const name = document.getElementById('fName').value.trim();
+            if (!name) return showToast('⚠️ Vui lòng nhập tên khách hàng!');
+
+            const editingId = document.getElementById('editId').value;
+            const data = {
+                id: editingId || Date.now().toString(),
+                date: dateKey(currentDate),
+                timeStart: document.getElementById('fTimeStart').value,
+                timeEnd: document.getElementById('fTimeEnd').value,
+                name: name,
+                service: document.getElementById('fService').value,
+                phone: document.getElementById('fPhone').value.trim(),
+                address: document.getElementById('fAddress').value.trim(),
+                status: document.getElementById('fStatus').value,
+                price: document.getElementById('fPrice').value,
+                note: document.getElementById('fNote').value.trim(),
+            };
+
+            if (editingId) {
+                bookings = bookings.map(b => b.id === editingId ? data : b);
+                showToast('✅ Đã cập nhật thành công! Nhớ bấm Đồng bộ.');
+            } else {
+                bookings.push(data);
+                showToast('✨ Đã thêm lịch mới! Nhớ bấm Đồng bộ.');
+            }
+            
+            localStorage.setItem('makeup_backup', JSON.stringify(bookings));
+            closeModal();
+            renderSchedule();
+        }
+
+        function deleteBooking(id) {
+            if (confirm('Bạn chắc chắn muốn xóa lịch này?')) {
+                bookings = bookings.filter(b => b.id !== id);
+                localStorage.setItem('makeup_backup', JSON.stringify(bookings));
+                renderSchedule();
+                showToast('🗑️ Đã xóa lịch hẹn. Nhớ bấm Đồng bộ.');
+            }
+        }
+
+        function populateTimeSelects(start) {
+            const s = document.getElementById('fTimeStart');
+            const e = document.getElementById('fTimeEnd');
+            s.innerHTML = HOURS.map(h => `<option ${h===start?'selected':''}>${h}</option>`).join('');
+            e.innerHTML = `<option value="">-- (Tùy chọn)</option>` + HOURS.map(h => `<option>${h}</option>`).join('');
+        }
+
+        function openModal(hour = '08:00') {
+            document.getElementById('editId').value = '';
+            document.getElementById('modalTitle').textContent = '✨ Thêm Lịch Mới';
+            ['fName','fPhone','fAddress','fNote','fPrice'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('fStatus').value = 'pending';
+            populateTimeSelects(hour);
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function editBooking(id) {
+            const b = bookings.find(x => x.id === id);
+            if (!b) return;
+            
+            document.getElementById('modalTitle').textContent = '✏️ Sửa Lịch Hẹn';
+            document.getElementById('editId').value = id;
+            populateTimeSelects(b.timeStart);
+            document.getElementById('fTimeEnd').value = b.timeEnd || '';
+            document.getElementById('fName').value = b.name || '';
+            document.getElementById('fPhone').value = b.phone || '';
+            document.getElementById('fAddress').value = b.address || '';
+            document.getElementById('fNote').value = b.note || '';
+            document.getElementById('fPrice').value = b.price || '';
+            document.getElementById('fService').value = b.service || '';
+            document.getElementById('fStatus').value = b.status || 'pending';
+            
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+        function closeModalOutside(e) { if (e.target.id === 'modalOverlay') closeModal(); }
+
+        function updateDateDisplay() {
+            document.getElementById('currentDateLabel').textContent = formatDateVN(currentDate);
+            document.getElementById('datePicker').value = dateKey(currentDate);
+        }
+        function changeDate(delta) { currentDate.setDate(currentDate.getDate() + delta); updateDateDisplay(); renderSchedule(); }
+        function onDatePick() { 
+            const v = document.getElementById('datePicker').value;
+            if (v) { currentDate = new Date(v); updateDateDisplay(); renderSchedule(); } 
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        // ================= KẾT NỐI API GOOGLE SHEETS =================
+        async function pullFromSheet() {
+            if (isSyncing) return;
+            isSyncing = true;
+            document.getElementById('syncStatus').innerHTML = '⏳ Đang tải...';
+            
+            try {
+                // Ép trình duyệt luôn lấy dữ liệu mới nhất (chống F5 bị mất do cache)
+                const response = await fetch(SCRIPT_URL + "?t=" + Date.now());
+                const result = await response.json();
+                
+                if (result.data) {
+                    bookings = result.data; 
+                    localStorage.setItem('makeup_backup', JSON.stringify(bookings)); 
+                    renderSchedule(); 
+                    document.getElementById('syncStatus').innerHTML = '🟢 Đã đồng bộ mới nhất';
+                    document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-green-100 text-green-700';
+                }
+            } catch (error) {
+                console.error("Lỗi tải dữ liệu:", error);
+                document.getElementById('syncStatus').innerHTML = '🔴 Lỗi mạng (Offline)';
+                document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-red-100 text-red-700';
+            }
+            isSyncing = false;
+        }
+
+        async function pushToSheet() {
+            if (isSyncing) return;
+            isSyncing = true;
+            document.getElementById('syncStatus').innerHTML = '⏳ Đang đẩy lên...';
+            document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-yellow-100 text-yellow-700';
+
+            try {
+                // Sửa lỗi CORS bằng text/plain
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'update', data: bookings })
+                });
+                
+                localStorage.setItem('makeup_backup', JSON.stringify(bookings));
+                document.getElementById('syncStatus').innerHTML = '🟢 Đã lưu an toàn lên Cloud';
+                document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-green-100 text-green-700';
+                showToast('📤 Đã đẩy dữ liệu thành công lên Google Sheets!');
+            } catch (error) {
+                console.error("Lỗi đẩy dữ liệu:", error);
+                document.getElementById('syncStatus').innerHTML = '🔴 Lỗi kết nối';
+                document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-red-100 text-red-700';
+                showToast('❌ Mạng lỗi, dữ liệu hiện chỉ lưu tạm trên máy.');
+            }
+            isSyncing = false;
+        }
+
+        // ================= KHỞI ĐỘNG HỆ THỐNG =================
+        updateDateDisplay();
+        loadLocalBackup(); // 1. Mở web là múc ngay dữ liệu cũ trong máy ra vẽ cho lẹ
+        pullFromSheet();   // 2. Chạy ngầm móc dữ liệu mới nhất từ Cloud (Khắc phục F5)
+    </script>
 </body>
 </html>
