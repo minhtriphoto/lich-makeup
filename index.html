@@ -400,7 +400,45 @@ function toggleConfig() {
     document.getElementById('cfgUrl').value = SCRIPT_URL;
   }
 }
+// ==================== ĐẨY DỮ LIỆU TỪ APP LÊN SHEETS ====================
+async function pushToSheet() {
+  if (isPushing) return;
+  if (bookings.length === 0) {
+    showToast('⚠️ Không có dữ liệu để đẩy lên Sheets');
+    return;
+  }
+  
+  isPushing = true;
+  document.getElementById('syncStatus').innerHTML = '⏳ Đang đẩy lên Sheets...';
+  document.getElementById('syncStatus').className = 'sync-status warning';
 
+  try {
+    // Sửa lỗi CORS bằng cách dùng text/plain thay vì application/json
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify({ action: 'update', data: bookings })
+    });
+
+    localStorage.setItem('makeup_backup', JSON.stringify(bookings));
+    document.getElementById('syncStatus').innerHTML = '✅ Đã đẩy lên Sheets thành công!';
+    document.getElementById('syncStatus').className = 'sync-status';
+    showToast(`📤 Đã đồng bộ ${bookings.length} lịch hẹn!`);
+    
+    setTimeout(() => {
+      document.getElementById('syncStatus').innerHTML = '🟢 Sẵn sàng';
+    }, 2000);
+
+  } catch (error) {
+    console.error('Lỗi push:', error);
+    document.getElementById('syncStatus').innerHTML = '❌ Lỗi kết nối';
+    document.getElementById('syncStatus').className = 'sync-status error';
+    showToast('❌ Mạng lỗi, không thể đẩy lên Sheets');
+  }
+  isPushing = false;
+}
 // ════════════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════════════
