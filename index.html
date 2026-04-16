@@ -3,242 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>✨ Lịch Makeup Studio - Final Version</title>
+    <title>✨ Lịch Makeup Studio - Auto Sync Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        rose: '#e8a4b8', deepRose: '#c0697f', blush: '#f5dde5',
-                        cream: '#fdf6f0', brown: '#5a3a3a', gold: '#c9a96e', dark: '#2d1f1f'
-                    },
-                    fontFamily: {
-                        sans: ['DM Sans', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif']
-                    }
+                    colors: { rose: '#e8a4b8', deepRose: '#c0697f', blush: '#f5dde5', cream: '#fdf6f0', brown: '#5a3a3a', gold: '#c9a96e', dark: '#2d1f1f' },
+                    fontFamily: { sans: ['DM Sans', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
                 }
             }
         }
     </script>
     <style>
-        /* Tùy chỉnh thanh cuộn siêu mượt */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #e8a4b8; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #c0697f; }
-        
-        /* Hiệu ứng kéo thả */
         .drag-over { background-color: #fdf2f5 !important; border: 2px dashed #c0697f !important; }
-        .booking-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-        .booking-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(192, 105, 127, 0.2); }
-        
+        .booking-card { transition: all 0.2s ease; }
         body { background-color: #fdf6f0; }
+        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .animate-scale-in { animation: scaleIn 0.2s ease-out; }
     </style>
 </head>
 <body class="text-dark antialiased min-h-screen flex flex-col">
 
     <header class="bg-gradient-to-r from-deepRose via-[#a3526b] to-brown text-white shadow-lg sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <span class="text-4xl filter drop-shadow-md">💄</span>
+                <span class="text-4xl">💄</span>
                 <div>
-                    <h1 class="font-serif text-2xl font-bold tracking-wide">Makeup Studio</h1>
-                    <p class="text-xs uppercase tracking-widest opacity-80 mt-1">Quản lý Lịch & Khách Hàng</p>
+                    <h1 class="font-serif text-2xl font-bold">Makeup Studio</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] opacity-80">Cloud Sync Active</p>
                 </div>
             </div>
-            
-            <div class="flex items-center gap-3 flex-wrap justify-center">
-                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/20">
-                    <button onclick="changeDate(-1)" class="hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-colors">‹</button>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-1.5 border border-white/20">
+                    <button onclick="changeDate(-1)" class="hover:bg-white/20 rounded-full w-8 h-8">‹</button>
                     <div class="relative">
-                        <span id="currentDateLabel" class="font-serif text-lg font-medium min-w-[150px] text-center inline-block cursor-pointer"></span>
-                        <input type="date" id="datePicker" onchange="onDatePick()" class="absolute inset-0 opacity-0 cursor-pointer w-full">
+                        <span id="currentDateLabel" class="font-serif text-lg font-medium min-w-[150px] text-center cursor-pointer"></span>
+                        <input type="date" id="datePicker" onchange="onDatePick()" class="absolute inset-0 opacity-0 cursor-pointer">
                     </div>
-                    <button onclick="changeDate(1)" class="hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-colors">›</button>
+                    <button onclick="changeDate(1)" class="hover:bg-white/20 rounded-full w-8 h-8">›</button>
                 </div>
-                <button onclick="openModal()" class="bg-gold hover:bg-[#b8924a] text-white px-5 py-2.5 rounded-full font-medium shadow-[0_4px_14px_rgba(201,169,110,0.4)] transition-all flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Thêm Lịch
+                <button onclick="openModal()" class="bg-gold hover:bg-[#b8924a] text-white px-5 py-2.5 rounded-full font-medium shadow-lg flex items-center gap-2">
+                    <span>+</span> Thêm Lịch
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <main class="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-rose flex items-center gap-4">
-                <div class="text-3xl bg-blush p-3 rounded-xl">📅</div>
-                <div><p class="text-3xl font-serif text-deepRose font-bold" id="statTotal">0</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Hôm nay</p></div>
+                <div class="text-2xl">📅</div>
+                <div><p class="text-2xl font-serif text-deepRose font-bold" id="statTotal">0</p><p class="text-[10px] text-gray-400 font-bold uppercase">Hôm nay</p></div>
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-gold flex items-center gap-4">
-                <div class="text-3xl bg-yellow-50 p-3 rounded-xl">✅</div>
-                <div><p class="text-3xl font-serif text-deepRose font-bold" id="statDone">0</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Đã xong</p></div>
+                <div class="text-2xl">✅</div>
+                <div><p class="text-2xl font-serif text-deepRose font-bold" id="statDone">0</p><p class="text-[10px] text-gray-400 font-bold uppercase">Xong</p></div>
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-[#6bb5a3] flex items-center gap-4">
-                <div class="text-3xl bg-teal-50 p-3 rounded-xl">⏳</div>
-                <div><p class="text-3xl font-serif text-deepRose font-bold" id="statPending">0</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Chờ duyệt</p></div>
+                <div class="text-2xl">⏳</div>
+                <div><p class="text-2xl font-serif text-deepRose font-bold" id="statPending">0</p><p class="text-[10px] text-gray-400 font-bold uppercase">Chờ duyệt</p></div>
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-brown flex items-center gap-4">
-                <div class="text-3xl bg-orange-50 p-3 rounded-xl">💰</div>
-                <div><p class="text-xl font-serif text-deepRose font-bold" id="statRevenue">0đ</p><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Doanh thu</p></div>
+                <div class="text-2xl">💰</div>
+                <div><p class="text-lg font-serif text-deepRose font-bold" id="statRevenue">0đ</p><p class="text-[10px] text-gray-400 font-bold uppercase">Doanh thu</p></div>
             </div>
         </div>
 
         <div class="flex flex-wrap gap-3 items-center mb-6 bg-white p-3 rounded-2xl shadow-sm border border-blush">
-            <div class="relative flex-1 min-w-[200px]">
-                <span class="absolute left-3 top-2.5 text-rose">🔍</span>
-                <input type="text" id="searchInput" oninput="renderSchedule()" placeholder="Tìm khách hàng, SĐT..." class="w-full bg-cream border border-blush rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-deepRose focus:ring-1 focus:ring-deepRose transition-all">
-            </div>
-            <select id="filterStatus" onchange="renderSchedule()" class="bg-cream border border-blush rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-deepRose">
+            <input type="text" id="searchInput" oninput="renderSchedule()" placeholder="Tìm khách hàng, SĐT..." class="flex-1 min-w-[200px] bg-cream border border-blush rounded-xl px-4 py-2 text-sm outline-none focus:border-deepRose">
+            <select id="filterStatus" onchange="renderSchedule()" class="bg-cream border border-blush rounded-xl px-4 py-2 text-sm outline-none">
                 <option value="">Tất cả trạng thái</option>
                 <option value="confirmed">✅ Đã chốt</option>
                 <option value="pending">⏳ Chờ xác nhận</option>
                 <option value="done">✔️ Hoàn thành</option>
             </select>
-            <div class="h-8 w-px bg-blush mx-2 hidden md:block"></div>
-            <button onclick="pullFromSheet()" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-xl text-sm font-medium transition-colors">📥 Tải về</button>
-            <button onclick="pushToSheet()" class="bg-green-50 text-green-600 hover:bg-green-100 px-4 py-2 rounded-xl text-sm font-medium transition-colors">📤 Đồng bộ</button>
-            <span id="syncStatus" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600">🟢 Khởi động...</span>
+            <button onclick="pullFromSheet()" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-sm font-medium">🔄 Làm mới</button>
+            <span id="syncStatus" class="text-[10px] font-bold px-3 py-2 rounded-lg bg-gray-100 text-gray-500 uppercase tracking-wider italic">Đang kiểm tra kết nối...</span>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-blush/50 overflow-hidden">
-            <div class="bg-gradient-to-r from-blush to-[#fbe8f0] px-6 py-3 border-b-2 border-rose flex justify-between items-center">
-                <h2 class="font-serif text-deepRose font-bold text-lg">Lịch Trình Chi Tiết</h2>
-                <span class="text-xs text-brown font-medium bg-white/50 px-3 py-1 rounded-full hidden md:inline-block">Kéo thả thẻ để đổi giờ</span>
-            </div>
-            
-            <div id="scheduleBody" class="divide-y divide-blush/40 flex flex-col pb-10">
-                </div>
+        <div class="bg-white rounded-2xl shadow-xl border border-blush/50 overflow-hidden">
+            <div id="scheduleBody" class="divide-y divide-blush/40 flex flex-col"></div>
         </div>
     </main>
 
     <div id="modalOverlay" class="fixed inset-0 bg-dark/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="closeModalOutside(event)">
-        <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-[scale-in_0.2s_ease-out]">
-            <div class="bg-gradient-to-r from-deepRose to-brown px-6 py-4 flex justify-between items-center">
-                <h2 id="modalTitle" class="font-serif text-xl text-white font-bold tracking-wide">✨ Thêm Lịch Mới</h2>
-                <button onclick="closeModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+        <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-scale-in">
+            <div class="bg-gradient-to-r from-deepRose to-brown px-6 py-4 flex justify-between">
+                <h2 id="modalTitle" class="font-serif text-xl text-white font-bold">✨ Lịch Makeup</h2>
+                <button onclick="closeModal()" class="text-white text-2xl">&times;</button>
             </div>
-            
-            <div class="p-6 overflow-y-auto max-h-[80vh]">
+            <div class="p-6 max-h-[80vh] overflow-y-auto">
                 <input type="hidden" id="editId">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div>
-                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Thời gian</label>
-                        <div class="flex items-center gap-2">
-                            <select id="fTimeStart" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none"></select>
-                            <span class="text-gray-400">→</span>
-                            <select id="fTimeEnd" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none"></select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Trạng thái</label>
-                        <select id="fStatus" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none font-medium">
-                            <option value="pending">⏳ Chờ xác nhận</option>
-                            <option value="confirmed">✅ Đã chốt lịch</option>
-                            <option value="done">✔️ Hoàn thành</option>
-                            <option value="cancelled">❌ Đã huỷ</option>
-                        </select>
-                    </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div><label class="text-[10px] font-bold text-brown uppercase">Bắt đầu</label><select id="fTimeStart" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"></select></div>
+                    <div><label class="text-[10px] font-bold text-brown uppercase">Kết thúc</label><select id="fTimeEnd" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"></select></div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div>
-                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Khách hàng *</label>
-                        <input type="text" id="fName" placeholder="Tên khách hàng..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Số điện thoại</label>
-                        <input type="tel" id="fPhone" placeholder="09xx..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
-                    </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div><label class="text-[10px] font-bold text-brown uppercase">Khách hàng *</label><input type="text" id="fName" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"></div>
+                    <div><label class="text-[10px] font-bold text-brown uppercase">Điện thoại</label><input type="tel" id="fPhone" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"></div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div>
-                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Dịch vụ</label>
-                        <select id="fService" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
-                            <option>Makeup cô dâu</option><option>Makeup dự tiệc</option><option>Makeup sự kiện</option><option>Makeup kỷ yếu</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Chi phí (VNĐ)</label>
-                        <input type="number" id="fPrice" placeholder="Ví dụ: 500000" class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none text-gold font-bold">
-                    </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div><label class="text-[10px] font-bold text-brown uppercase">Dịch vụ</label><select id="fService" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"><option>Makeup cô dâu</option><option>Makeup dự tiệc</option><option>Makeup sự kiện</option><option>Makeup kỷ yếu</option></select></div>
+                    <div><label class="text-[10px] font-bold text-brown uppercase">Chi phí</label><input type="number" id="fPrice" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"></div>
                 </div>
-
-                <div class="mb-5">
-                    <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Địa điểm Makeup</label>
-                    <input type="text" id="fAddress" placeholder="Tại Studio hoặc địa chỉ nhà khách..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none">
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-xs font-bold text-brown uppercase tracking-wider mb-1">Ghi chú (Note)</label>
-                    <textarea id="fNote" rows="2" placeholder="Tone makeup, dị ứng mỹ phẩm..." class="w-full bg-cream border border-blush rounded-xl px-3 py-2.5 text-sm focus:border-deepRose outline-none"></textarea>
-                </div>
-
-                <div class="flex justify-end gap-3 pt-4 border-t border-blush">
-                    <button onclick="closeModal()" class="px-6 py-2.5 rounded-xl font-medium text-brown bg-gray-100 hover:bg-gray-200 transition-colors">Huỷ</button>
-                    <button onclick="saveBooking()" class="px-6 py-2.5 rounded-xl font-medium text-white bg-deepRose hover:bg-[#a3526b] shadow-md transition-all">Lưu Lịch Hẹn</button>
-                </div>
+                <div class="mb-4"><label class="text-[10px] font-bold text-brown uppercase">Địa điểm</label><input type="text" id="fAddress" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"></div>
+                <div class="mb-6"><label class="text-[10px] font-bold text-brown uppercase">Ghi chú</label><textarea id="fNote" rows="2" class="w-full bg-cream border border-blush rounded-xl px-3 py-2 text-sm outline-none"></textarea></div>
+                <div class="flex justify-end gap-3"><button onclick="closeModal()" class="px-6 py-2 rounded-xl bg-gray-100">Huỷ</button><button onclick="saveBooking()" class="px-6 py-2 rounded-xl bg-deepRose text-white font-bold">Lưu & Đồng bộ</button></div>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-6 right-6 bg-dark text-white px-6 py-3 rounded-xl shadow-2xl font-medium text-sm transform translate-y-20 opacity-0 transition-all duration-300 z-[60]">
-        Thông báo
-    </div>
+    <div id="toast" class="fixed bottom-6 right-6 bg-dark text-white px-6 py-3 rounded-xl shadow-2xl text-sm transform translate-y-20 opacity-0 transition-all duration-300 z-50"></div>
 
     <script>
-        // ================= THAY LINK GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY =================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ6wjR-LDzsEDk4Yrlo2vmZwaXO74IeR-Xtejg3tVxrO1d-SJTIYEJVXu0Y4T-_5DK/exec";
-        // ==============================================================================
+        // ======= [QUAN TRỌNG] THAY LINK CỦA BẠN VÀO ĐÂY =======
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ6wjR-LDzsEDk4Yrlo2vmZwaXO74IeR-Xtejg3tVxrO1d-SJTIYEJVXu0Y4T-_5DK/exec"; 
+        // ======================================================
 
-        // Khởi tạo Dữ liệu
         let currentDate = new Date();
         let bookings = [];
         let isSyncing = false;
 
-        const STATUS_COLORS = {
-            'pending': 'bg-yellow-50 text-yellow-700 border-yellow-200',
-            'confirmed': 'bg-blue-50 text-blue-700 border-blue-200',
-            'done': 'bg-green-50 text-green-700 border-green-200',
-            'cancelled': 'bg-red-50 text-red-700 border-red-200'
+        const STATUS_UI = {
+            'pending': { color: 'bg-yellow-50 text-yellow-700 border-yellow-200', text: '⏳ Chờ duyệt' },
+            'confirmed': { color: 'bg-blue-50 text-blue-700 border-blue-200', text: '✅ Đã chốt' },
+            'done': { color: 'bg-green-50 text-green-700 border-green-200', text: '✔️ Xong' },
+            'cancelled': { color: 'bg-red-50 text-red-700 border-red-200', text: '❌ Hủy' }
         };
-        const STATUS_TEXT = { 'pending': '⏳ Chờ duyệt', 'confirmed': '✅ Đã chốt', 'done': '✔️ Xong', 'cancelled': '❌ Hủy' };
 
-        // Tạo mảng khung giờ (06:00 -> 21:00)
         const HOURS = Array.from({length: 16}, (_, i) => `${String(i+6).padStart(2, '0')}:00`);
 
-        // ================= LOGIC KÉO THẢ (DRAG & DROP) =================
-        function allowDrop(ev) {
-            ev.preventDefault();
-            ev.currentTarget.classList.add('drag-over');
-        }
-        function dragLeave(ev) { ev.currentTarget.classList.remove('drag-over'); }
-        
-        function dragStart(ev, id) {
-            ev.dataTransfer.setData("text/plain", id);
-            setTimeout(() => ev.target.style.opacity = '0.5', 0);
-        }
-        function dragEnd(ev) { ev.target.style.opacity = '1'; }
-        
-        function drop(ev, newTime) {
-            ev.preventDefault();
-            ev.currentTarget.classList.remove('drag-over');
-            const id = ev.dataTransfer.getData("text/plain");
-            
-            const bookingIndex = bookings.findIndex(b => b.id === id);
-            if (bookingIndex > -1 && bookings[bookingIndex].timeStart !== newTime) {
-                bookings[bookingIndex].timeStart = newTime;
-                localStorage.setItem('makeup_backup', JSON.stringify(bookings));
-                renderSchedule();
-                showToast(`🕒 Đã dời lịch của ${bookings[bookingIndex].name} sang ${newTime}. Nhớ bấm Đồng bộ!`);
-            }
-        }
-
-        // ================= HIỂN THỊ DỮ LIỆU =================
+        // CORE LOGIC
         function dateKey(d) { return d.toISOString().slice(0, 10); }
         function formatDateVN(d) {
             const days = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
@@ -248,242 +147,175 @@
         function renderSchedule() {
             const key = dateKey(currentDate);
             const search = document.getElementById('searchInput').value.toLowerCase();
-            const filterStatus = document.getElementById('filterStatus').value;
+            const filter = document.getElementById('filterStatus').value;
+            const today = bookings.filter(b => b.date === key);
 
-            const todayBookings = bookings.filter(b => b.date === key);
-
-            // Cập nhật thống kê
-            document.getElementById('statTotal').textContent = todayBookings.length;
-            document.getElementById('statDone').textContent = todayBookings.filter(b=>b.status==='done').length;
-            document.getElementById('statPending').textContent = todayBookings.filter(b=>b.status==='pending').length;
-            const rev = todayBookings.filter(b=>b.status==='done'||b.status==='confirmed').reduce((s,b)=>s+(+b.price||0),0);
-            document.getElementById('statRevenue').textContent = rev.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('statTotal').innerText = today.length;
+            document.getElementById('statDone').innerText = today.filter(b=>b.status==='done').length;
+            document.getElementById('statPending').innerText = today.filter(b=>b.status==='pending').length;
+            const rev = today.filter(b=>b.status==='done'||b.status==='confirmed').reduce((s,b)=>s+(+b.price||0),0);
+            document.getElementById('statRevenue').innerText = rev.toLocaleString('vi-VN') + 'đ';
 
             const container = document.getElementById('scheduleBody');
             container.innerHTML = '';
 
             HOURS.forEach(hour => {
-                const slotBookings = todayBookings.filter(b => b.timeStart === hour && (!filterStatus || b.status === filterStatus) && (!search || b.name.toLowerCase().includes(search) || (b.phone||'').includes(search)));
-                
-                // Ẩn khung giờ trống nếu đang tìm kiếm hoặc lọc
-                if (slotBookings.length === 0 && (search || filterStatus)) return;
+                const slots = today.filter(b => b.timeStart === hour && (!filter || b.status === filter) && (!search || b.name.toLowerCase().includes(search) || b.phone.includes(search)));
+                if (slots.length === 0 && (search || filter)) return;
 
                 const row = document.createElement('div');
-                row.className = "flex flex-col md:flex-row min-h-[100px] transition-colors hover:bg-white/50 border-b border-blush/30";
-                
-                // Dropzone events
-                row.ondragover = allowDrop;
-                row.ondragleave = dragLeave;
-                row.ondrop = (e) => drop(e, hour);
+                row.className = "flex flex-col md:flex-row border-b border-blush/20 min-h-[80px]";
+                row.ondragover = e => { e.preventDefault(); e.currentTarget.classList.add('bg-blush/20'); };
+                row.ondragleave = e => e.currentTarget.classList.remove('bg-blush/20');
+                row.ondrop = e => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove('bg-blush/20');
+                    const id = e.dataTransfer.getData("text");
+                    const idx = bookings.findIndex(b => b.id === id);
+                    if (idx > -1) { 
+                        bookings[idx].timeStart = hour; 
+                        renderSchedule(); 
+                        pushToSheet(); // Tự động lưu khi kéo thả
+                    }
+                };
 
-                let cardsHtml = '';
-                slotBookings.forEach(b => {
-                    cardsHtml += `
-                        <div draggable="true" ondragstart="dragStart(event, '${b.id}')" ondragend="dragEnd(event)" 
-                             class="booking-card w-full md:w-80 bg-white border border-blush rounded-xl p-4 shadow-sm cursor-grab active:cursor-grabbing flex flex-col justify-between">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold text-brown text-base">${b.name}</h4>
-                                    <p class="text-xs text-deepRose font-medium">${b.service}</p>
-                                </div>
-                                <span class="text-[10px] font-bold px-2 py-1 rounded-md border ${STATUS_COLORS[b.status]}">${STATUS_TEXT[b.status]}</span>
-                            </div>
-                            
-                            <div class="space-y-1.5 text-sm text-gray-600 mb-3">
-                                ${b.phone ? `<p class="flex items-center gap-2">📞 <a href="tel:${b.phone}" class="hover:text-deepRose">${b.phone}</a></p>` : ''}
-                                ${b.address ? `<p class="flex items-start gap-2 truncate">📍 <span class="truncate">${b.address}</span></p>` : ''}
-                                ${b.price ? `<p class="flex items-center gap-2 text-gold font-medium">💰 ${(+b.price).toLocaleString('vi-VN')}đ</p>` : ''}
-                            </div>
-                            
-                            <div class="flex justify-between items-center pt-3 border-t border-blush/50">
-                                <span class="text-xs text-gray-400 font-medium">${b.timeStart} ${b.timeEnd ? ' - '+b.timeEnd : ''}</span>
-                                <div class="flex gap-2">
-                                    <button onclick="editBooking('${b.id}')" class="text-gray-400 hover:text-deepRose transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                    <button onclick="deleteBooking('${b.id}')" class="text-gray-400 hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                                </div>
-                            </div>
+                let cardHtml = slots.map(b => `
+                    <div draggable="true" ondragstart="event.dataTransfer.setData('text','${b.id}')" class="booking-card bg-white border border-blush p-3 rounded-xl shadow-sm w-full md:w-72 relative group">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-sm">${b.name}</span>
+                            <span class="text-[8px] font-bold px-1.5 py-0.5 rounded border ${STATUS_UI[b.status].color}">${STATUS_UI[b.status].text}</span>
                         </div>
-                    `;
-                });
-
-                if (slotBookings.length === 0) {
-                    cardsHtml = `<div class="flex-1 flex items-center justify-center text-sm text-gray-400 italic">Trống - Kéo lịch vào đây hoặc <button onclick="openModal('${hour}')" class="ml-1 text-deepRose hover:underline font-medium">Thêm</button></div>`;
-                }
+                        <p class="text-[10px] text-deepRose font-medium mb-2">${b.service}</p>
+                        <div class="text-[10px] text-gray-500 space-y-0.5">
+                            ${b.phone ? `<span>📞 ${b.phone}</span><br>` : ''}
+                            ${b.price ? `<span class="text-gold font-bold">💰 ${(+b.price).toLocaleString('vi-VN')}đ</span>` : ''}
+                        </div>
+                        <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editBooking('${b.id}')" class="p-1 bg-gray-50 rounded">✏️</button>
+                            <button onclick="deleteBooking('${b.id}')" class="p-1 bg-red-50 rounded">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
 
                 row.innerHTML = `
-                    <div class="w-full md:w-28 flex-shrink-0 bg-cream/30 border-b md:border-b-0 md:border-r border-blush/50 p-4 flex flex-col justify-center items-center">
-                        <span class="font-serif text-xl font-bold text-deepRose">${hour}</span>
-                    </div>
-                    <div class="flex-1 p-4 flex flex-wrap gap-4 items-start content-start min-h-[120px]">
-                        ${cardsHtml}
+                    <div class="w-full md:w-24 bg-cream/30 p-4 flex items-center justify-center border-r border-blush/10 font-serif font-bold text-deepRose text-lg">${hour}</div>
+                    <div class="flex-1 p-3 flex flex-wrap gap-3 items-center min-h-[60px]">
+                        ${cardHtml || `<button onclick="openModal('${hour}')" class="text-xs text-gray-300 hover:text-rose italic">+ Click để thêm lịch</button>`}
                     </div>
                 `;
                 container.appendChild(row);
             });
         }
 
-        // ================= CÁC HÀM QUẢN LÝ DỮ LIỆU & MODAL =================
-        function loadLocalBackup() {
-            const backup = localStorage.getItem('makeup_backup');
-            if (backup) {
-                bookings = JSON.parse(backup);
-            }
-            renderSchedule();
-        }
-
-        function saveBooking() {
-            const name = document.getElementById('fName').value.trim();
-            if (!name) return showToast('⚠️ Vui lòng nhập tên khách hàng!');
-
-            const editingId = document.getElementById('editId').value;
-            const data = {
-                id: editingId || Date.now().toString(),
-                date: dateKey(currentDate),
-                timeStart: document.getElementById('fTimeStart').value,
-                timeEnd: document.getElementById('fTimeEnd').value,
-                name: name,
-                service: document.getElementById('fService').value,
-                phone: document.getElementById('fPhone').value.trim(),
-                address: document.getElementById('fAddress').value.trim(),
-                status: document.getElementById('fStatus').value,
-                price: document.getElementById('fPrice').value,
-                note: document.getElementById('fNote').value.trim(),
-            };
-
-            if (editingId) {
-                bookings = bookings.map(b => b.id === editingId ? data : b);
-                showToast('✅ Đã cập nhật thành công! Nhớ bấm Đồng bộ.');
-            } else {
-                bookings.push(data);
-                showToast('✨ Đã thêm lịch mới! Nhớ bấm Đồng bộ.');
-            }
-            
-            localStorage.setItem('makeup_backup', JSON.stringify(bookings));
-            closeModal();
-            renderSchedule();
-        }
-
-        function deleteBooking(id) {
-            if (confirm('Bạn chắc chắn muốn xóa lịch này?')) {
-                bookings = bookings.filter(b => b.id !== id);
-                localStorage.setItem('makeup_backup', JSON.stringify(bookings));
-                renderSchedule();
-                showToast('🗑️ Đã xóa lịch hẹn. Nhớ bấm Đồng bộ.');
-            }
-        }
-
-        function populateTimeSelects(start) {
-            const s = document.getElementById('fTimeStart');
-            const e = document.getElementById('fTimeEnd');
-            s.innerHTML = HOURS.map(h => `<option ${h===start?'selected':''}>${h}</option>`).join('');
-            e.innerHTML = `<option value="">-- (Tùy chọn)</option>` + HOURS.map(h => `<option>${h}</option>`).join('');
-        }
-
-        function openModal(hour = '08:00') {
-            document.getElementById('editId').value = '';
-            document.getElementById('modalTitle').textContent = '✨ Thêm Lịch Mới';
-            ['fName','fPhone','fAddress','fNote','fPrice'].forEach(id => document.getElementById(id).value = '');
-            document.getElementById('fStatus').value = 'pending';
-            populateTimeSelects(hour);
-            document.getElementById('modalOverlay').classList.remove('hidden');
-        }
-
-        function editBooking(id) {
-            const b = bookings.find(x => x.id === id);
-            if (!b) return;
-            
-            document.getElementById('modalTitle').textContent = '✏️ Sửa Lịch Hẹn';
-            document.getElementById('editId').value = id;
-            populateTimeSelects(b.timeStart);
-            document.getElementById('fTimeEnd').value = b.timeEnd || '';
-            document.getElementById('fName').value = b.name || '';
-            document.getElementById('fPhone').value = b.phone || '';
-            document.getElementById('fAddress').value = b.address || '';
-            document.getElementById('fNote').value = b.note || '';
-            document.getElementById('fPrice').value = b.price || '';
-            document.getElementById('fService').value = b.service || '';
-            document.getElementById('fStatus').value = b.status || 'pending';
-            
-            document.getElementById('modalOverlay').classList.remove('hidden');
-        }
-
-        function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
-        function closeModalOutside(e) { if (e.target.id === 'modalOverlay') closeModal(); }
-
-        function updateDateDisplay() {
-            document.getElementById('currentDateLabel').textContent = formatDateVN(currentDate);
-            document.getElementById('datePicker').value = dateKey(currentDate);
-        }
-        function changeDate(delta) { currentDate.setDate(currentDate.getDate() + delta); updateDateDisplay(); renderSchedule(); }
-        function onDatePick() { 
-            const v = document.getElementById('datePicker').value;
-            if (v) { currentDate = new Date(v); updateDateDisplay(); renderSchedule(); } 
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
-        }
-
-        // ================= KẾT NỐI API GOOGLE SHEETS =================
+        // SYNC LOGIC
         async function pullFromSheet() {
-            if (isSyncing) return;
+            if (isSyncing || SCRIPT_URL.includes("YOUR_GOOGLE")) return;
             isSyncing = true;
-            document.getElementById('syncStatus').innerHTML = '⏳ Đang tải...';
-            
+            document.getElementById('syncStatus').innerText = '⏳ Đang tải dữ liệu...';
             try {
-                // Ép trình duyệt luôn lấy dữ liệu mới nhất (chống F5 bị mất do cache)
-                const response = await fetch(SCRIPT_URL + "?t=" + Date.now());
-                const result = await response.json();
-                
+                const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+                const result = await res.json();
                 if (result.data) {
-                    bookings = result.data; 
-                    localStorage.setItem('makeup_backup', JSON.stringify(bookings)); 
-                    renderSchedule(); 
-                    document.getElementById('syncStatus').innerHTML = '🟢 Đã đồng bộ mới nhất';
-                    document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-green-100 text-green-700';
+                    bookings = result.data;
+                    localStorage.setItem('makeup_backup', JSON.stringify(bookings));
+                    renderSchedule();
+                    document.getElementById('syncStatus').innerText = '🟢 Đã đồng bộ';
                 }
-            } catch (error) {
-                console.error("Lỗi tải dữ liệu:", error);
-                document.getElementById('syncStatus').innerHTML = '🔴 Lỗi mạng (Offline)';
-                document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-red-100 text-red-700';
+            } catch (e) {
+                document.getElementById('syncStatus').innerText = '🔴 Lỗi kết nối cloud';
             }
             isSyncing = false;
         }
 
         async function pushToSheet() {
-            if (isSyncing) return;
+            if (isSyncing || SCRIPT_URL.includes("YOUR_GOOGLE")) return;
             isSyncing = true;
-            document.getElementById('syncStatus').innerHTML = '⏳ Đang đẩy lên...';
-            document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-yellow-100 text-yellow-700';
-
+            document.getElementById('syncStatus').innerText = '⏳ Đang lưu cloud...';
             try {
-                // Sửa lỗi CORS bằng text/plain
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ action: 'update', data: bookings })
                 });
-                
                 localStorage.setItem('makeup_backup', JSON.stringify(bookings));
-                document.getElementById('syncStatus').innerHTML = '🟢 Đã lưu an toàn lên Cloud';
-                document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-green-100 text-green-700';
-                showToast('📤 Đã đẩy dữ liệu thành công lên Google Sheets!');
-            } catch (error) {
-                console.error("Lỗi đẩy dữ liệu:", error);
-                document.getElementById('syncStatus').innerHTML = '🔴 Lỗi kết nối';
-                document.getElementById('syncStatus').className = 'text-xs font-medium px-3 py-1.5 rounded-lg bg-red-100 text-red-700';
-                showToast('❌ Mạng lỗi, dữ liệu hiện chỉ lưu tạm trên máy.');
+                document.getElementById('syncStatus').innerText = '🟢 Đã lưu Cloud';
+                showToast("✅ Đã lưu lên Google Sheets!");
+            } catch (e) {
+                document.getElementById('syncStatus').innerText = '🔴 Lỗi khi lưu';
+                showToast("❌ Lỗi mạng, đã lưu tạm ở máy");
             }
             isSyncing = false;
         }
 
-        // ================= KHỞI ĐỘNG HỆ THỐNG =================
+        // ACTIONS
+        function saveBooking() {
+            const name = document.getElementById('fName').value.trim();
+            if (!name) return showToast('⚠️ Nhập tên khách hàng');
+            const id = document.getElementById('editId').value;
+            const data = {
+                id: id || Date.now().toString(),
+                date: dateKey(currentDate),
+                timeStart: document.getElementById('fTimeStart').value,
+                timeEnd: document.getElementById('fTimeEnd').value,
+                name, service: document.getElementById('fService').value,
+                phone: document.getElementById('fPhone').value,
+                address: document.getElementById('fAddress').value,
+                status: document.getElementById('fStatus').value,
+                price: document.getElementById('fPrice').value,
+                note: document.getElementById('fNote').value
+            };
+            if (id) bookings = bookings.map(b => b.id === id ? data : b);
+            else bookings.push(data);
+            
+            renderSchedule();
+            closeModal();
+            pushToSheet(); // Tự động lưu ngay khi bấm nút Lưu
+        }
+
+        function deleteBooking(id) {
+            if (confirm('Xóa lịch này?')) {
+                bookings = bookings.filter(b => b.id !== id);
+                renderSchedule();
+                pushToSheet(); // Tự động lưu ngay khi xóa
+            }
+        }
+
+        // UI HELPERS
+        function openModal(h = '08:00') {
+            document.getElementById('editId').value = '';
+            document.getElementById('modalTitle').innerText = '✨ Thêm Lịch';
+            ['fName','fPhone','fAddress','fNote','fPrice'].forEach(i => document.getElementById(i).value = '');
+            document.getElementById('fTimeStart').innerHTML = HOURS.map(hr => `<option ${hr===h?'selected':''}>${hr}</option>`).join('');
+            document.getElementById('fTimeEnd').innerHTML = `<option value="">--</option>` + HOURS.map(hr => `<option>${hr}</option>`).join('');
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function editBooking(id) {
+            const b = bookings.find(x => x.id === id);
+            openModal(b.timeStart);
+            document.getElementById('editId').value = id;
+            document.getElementById('modalTitle').innerText = '✏️ Sửa Lịch';
+            document.getElementById('fName').value = b.name;
+            document.getElementById('fPhone').value = b.phone;
+            document.getElementById('fAddress').value = b.address;
+            document.getElementById('fPrice').value = b.price;
+            document.getElementById('fNote').value = b.note;
+            document.getElementById('fStatus').value = b.status;
+            document.getElementById('fService').value = b.service;
+        }
+
+        function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+        function closeModalOutside(e) { if (e.target.id === 'modalOverlay') closeModal(); }
+        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.classList.remove('translate-y-20','opacity-0'); setTimeout(()=>t.classList.add('translate-y-20','opacity-0'), 3000); }
+        function onDatePick() { currentDate = new Date(document.getElementById('datePicker').value); updateDateDisplay(); renderSchedule(); pullFromSheet(); }
+        function changeDate(d) { currentDate.setDate(currentDate.getDate() + d); updateDateDisplay(); renderSchedule(); pullFromSheet(); }
+        function updateDateDisplay() { document.getElementById('currentDateLabel').innerText = formatDateVN(currentDate); document.getElementById('datePicker').value = dateKey(currentDate); }
+
+        // INIT
         updateDateDisplay();
-        loadLocalBackup(); // 1. Mở web là múc ngay dữ liệu cũ trong máy ra vẽ cho lẹ
-        pullFromSheet();   // 2. Chạy ngầm móc dữ liệu mới nhất từ Cloud (Khắc phục F5)
+        const local = localStorage.getItem('makeup_backup');
+        if (local) { bookings = JSON.parse(local); renderSchedule(); }
+        pullFromSheet();
     </script>
 </body>
 </html>
